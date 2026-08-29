@@ -40,7 +40,7 @@ public abstract class ShaderInstanceMixin implements ShaderInstanceInterface {
 	@Inject(
 		method = { "<init>(Lnet/minecraft/server/packs/resources/ResourceProvider;"
 				+ "Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/vertex/VertexFormat;)V" },
-		at = { @At("TAIL") },
+		at = { @At("TAIL") }
 	)
 	private void productivebeesgenesis$onShaderInit(ResourceProvider resourceProvider, ResourceLocation shaderLocation,
 		VertexFormat vertexFormat,
