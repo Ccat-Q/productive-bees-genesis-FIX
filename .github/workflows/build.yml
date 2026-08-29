@@ -50,7 +50,7 @@ jobs:
           curse_maven jdte-1566414 8622543 jdte-0.5.9-alpha1.jar
           curse_maven jade-324717 7545219 Jade-1.21.1-NeoForge-15.10.5.jar
           curse_maven kubejs-238086 8083208 kubejs-neoforge-2101.7.2-build.368.jar
-          unzip -p libs/kubejs-neoforge-2101.7.2-build.368.jar META-INF/jarjar/rhino-2101.2.7-build.85.jar > libs/rhino-2101.2.7-build.85.jar
+          fetch https://maven.latvian.dev/releases/dev/latvian/mods/rhino/2101.2.7-build.85/rhino-2101.2.7-build.85.jar rhino-2101.2.7-build.85.jar
           curse_maven jei-238222 8407142 jei-1.21.1-neoforge-19.36.0.360.jar
           curse_maven applied-energistics-2-223794 7027323 appliedenergistics2-1.21.1-19.2.17.jar
           curl --fail --location --retry 3 --retry-all-errors https://repo.spongepowered.org/repository/maven-public/org/spongepowered/mixin/0.8.5/mixin-0.8.5.jar --output libs/sponge-mixin.jar
