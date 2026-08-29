@@ -152,7 +152,7 @@ public final class ProductiveBeesGenesis {
 	 */
 	private void registerConfigListeners(IEventBus eventBus) {
 		eventBus.addListener((ModConfigEvent.Loading event) -> {
-			if (event.getConfig().getSpec() == ModConfig.SERVER_SPEC) {
+			if (isOwnServerConfig(event.getConfig())) {
 				boolean changed = BalanceConfigCompatibility.migrateLegacyConfig(event.getConfig());
 				changed |= ModConfig.validateAndFixCrossFields();
 				changed |= BalanceConfig.refresh(false);
@@ -164,7 +164,7 @@ public final class ProductiveBeesGenesis {
 			}
 		});
 		eventBus.addListener((ModConfigEvent.Reloading event) -> {
-			if (event.getConfig().getSpec() == ModConfig.SERVER_SPEC) {
+			if (isOwnServerConfig(event.getConfig())) {
 				boolean changed = ModConfig.validateAndFixCrossFields();
 				changed |= BalanceConfig.refresh(true);
 				if (changed) {
@@ -182,18 +182,23 @@ public final class ProductiveBeesGenesis {
 				// 槽位首次 getLimit 时读取配置并永久缓存（MULTIPLIER_VERSION 永不递增），
 				// 配置文件修改不影响已运行的槽位实例，避免热重载导致的性能抖动。
 			}
-			// 通知 RecipeReloadRetryManager 检测 EM/ME 配置死循环（Task 8）
-			// 注：放在 SERVER_SPEC 判断之外 — EM/ME 配置重载事件不匹配我们的 spec，
-			// 但仍需通知死循环检测器进行死循环判定
-			RecipeReloadRetryManager.onConfigFileChanged(
-					event.getConfig().getFullPath().toString(),
-					event.getConfig().getModId());
+			// 通知 RecipeReloadRetryManager 检测 EM/ME 配置死循环（Task 8）。
+			// 服务器同步配置是无本地路径的内存对象；重试管理器只需要稳定的 mod id。
+			RecipeReloadRetryManager.onConfigChanged(event.getConfig().getModId());
 		});
 	}
 
+	// 注册 mod 事件总线监听器（FML 生命周期事件）
 	/**
-	 * 注册 mod 事件总线监听器（FML 生命周期事件）
+	 * 仅处理本模组注册的 SERVER 配置。mod id 与类型在服务器同步时也稳定，spec
+	 * 身份则防止其他模组配置意外触发本模组的重载逻辑。
 	 */
+	private static boolean isOwnServerConfig(net.neoforged.fml.config.ModConfig config) {
+		return MOD_ID.equals(config.getModId())
+				&& config.getType() == Type.SERVER
+				&& config.getSpec() == ModConfig.SERVER_SPEC;
+	}
+
 	private void registerModEventBusListeners(IEventBus eventBus) {
 		eventBus.addListener(this::onCommonSetup);
 		// 注册 MEK 离心机的 Capability（安全、能量等）— 使 tooltip 能正确显示拥有者/安全等级/储能
