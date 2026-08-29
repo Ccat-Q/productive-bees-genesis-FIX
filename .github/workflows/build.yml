@@ -53,6 +53,7 @@ jobs:
           fetch https://maven.latvian.dev/releases/dev/latvian/mods/rhino/2101.2.7-build.85/rhino-2101.2.7-build.85.jar rhino-2101.2.7-build.85.jar
           curse_maven jei-238222 8407142 jei-1.21.1-neoforge-19.36.0.360.jar
           curse_maven applied-energistics-2-223794 7027323 appliedenergistics2-1.21.1-19.2.17.jar
+          curse_maven applied-flux-965012 6217144 AppliedFlux-1.21-2.1.5-neoforge.jar
           curl --fail --location --retry 3 --retry-all-errors https://repo.spongepowered.org/repository/maven-public/org/spongepowered/mixin/0.8.5/mixin-0.8.5.jar --output libs/sponge-mixin.jar
       - name: Build
         run: ./gradlew build --stacktrace

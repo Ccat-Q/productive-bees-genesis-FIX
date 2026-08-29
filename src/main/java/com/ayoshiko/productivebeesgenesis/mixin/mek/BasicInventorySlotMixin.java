@@ -141,7 +141,7 @@ public abstract class BasicInventorySlotMixin implements TieredInputSlot {
 
 	@Inject(method = "extractItem(ILmekanism/api/Action;"
 			+ "Lmekanism/api/AutomationType;)Lnet/minecraft/world/item/ItemStack;",
-			at = @At("HEAD"), cancellable = true, order = 1000)
+			at = @At("HEAD"), cancellable = true)
 	private void productivebeesgenesis$bulkExtractOverstackedOutput(int amount, Action action,
 			AutomationType automationType, CallbackInfoReturnable<ItemStack> cir) {
 		if (automationType != AutomationType.EXTERNAL || productivebeesgenesis$inputMultiplier == null
