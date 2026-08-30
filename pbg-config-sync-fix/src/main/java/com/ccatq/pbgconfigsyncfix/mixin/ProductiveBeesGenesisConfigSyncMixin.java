@@ -35,3 +35,4 @@ public abstract class ProductiveBeesGenesisConfigSyncMixin {
             throw exception;
         }
     }
+}
