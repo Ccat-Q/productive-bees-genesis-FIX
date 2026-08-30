@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_21",
+  "package": "com.ccatq.pbgconfigsyncfix.mixin",
+  "client": [
+    "ProductiveBeesGenesisConfigSyncMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

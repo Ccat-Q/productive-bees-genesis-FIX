@@ -1,0 +1,64 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.107'
+}
+
+group = 'com.ccatq.pbgconfigsyncfix'
+version = '1.0.0'
+
+base {
+    archivesName = 'pbg-config-sync-fix'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    mavenCentral()
+}
+
+neoForge {
+    version = '21.1.243'
+
+    mods {
+        pbg_config_sync_fix {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+dependencies {
+    // NeoForge supplies Mixin at runtime. This is only needed to compile the annotations.
+    compileOnly 'org.spongepowered:mixin:0.8.5'
+}
+
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def properties = [
+            mod_id: 'pbg_config_sync_fix',
+            mod_version: project.version
+    ]
+    inputs.properties(properties)
+    expand(properties)
+    from('src/main/templates')
+    into('build/generated/sources/modMetadata')
+}
+
+sourceSets.main.resources.srcDir(generateModMetadata)
+neoForge.ideSyncTask(generateModMetadata)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('jar', Jar) {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    manifest {
+        attributes(
+                'Implementation-Title': 'PBG Config Sync Fix',
+                'Implementation-Version': project.version,
+                'Minecraft-Version': '1.21.1'
+        )
+    }
+}

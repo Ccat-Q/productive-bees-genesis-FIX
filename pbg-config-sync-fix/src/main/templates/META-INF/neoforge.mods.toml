@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="PBG Config Sync Fix"
+authors="Ccat-Q"
+description='''
+Client-side compatibility patch for Productive Bees Genesis 1.0.5 server-config synchronization on NeoForge 21.1.243.
+'''
+
+[[mixins]]
+config="pbg_config_sync_fix.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.243,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="productivebeesgenesis"
+type="required"
+versionRange="[1.0.5,1.0.6)"
+ordering="AFTER"
+side="CLIENT"
