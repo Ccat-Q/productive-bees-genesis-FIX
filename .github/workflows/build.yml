@@ -60,7 +60,6 @@ jobs:
             and (.client | index("BalanceConfigCompatibilityMixin"))
             and (.client | index("LoadedConfigAccessor"))
             and (.client | index("ProductiveBeesGenesisConfigSyncMixin"))'
-      - name: Upload mod JAR
       - name: Prepare PBG client smoke-test mods
         shell: bash
         run: |
@@ -93,6 +92,7 @@ jobs:
           if grep -E 'InjectionError|MixinTransformerError|Scanned 0 target\(s\)|ProductiveBeesGenesis.*failed' "$log_file"; then
             exit 1
           fi
+      - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
           name: pbg-config-sync-fix-neoforge-1.21.1
