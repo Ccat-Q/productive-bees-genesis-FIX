@@ -20,13 +20,13 @@ repositories {
 neoForge {
     version = '21.1.243'
 
-    mods {
     runs {
         client {
             client()
         }
     }
 
+    mods {
         pbg_config_sync_fix {
             sourceSet(sourceSets.main)
         }
