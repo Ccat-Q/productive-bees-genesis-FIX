@@ -36,10 +36,11 @@ public abstract class ProductiveBeesGenesisConfigSyncMixin {
     private static void pbgConfigSyncFix$skipPathOnlyRetryForSyncedServerConfig(
             ModConfigEvent.Reloading event, CallbackInfo callbackInfo) {
         ModConfig config = event.getConfig();
+        Object loadedConfig = config.getLoadedConfig();
         if (PRODUCTIVE_BEES_GENESIS.equals(config.getModId())
                 && config.getType() == ModConfig.Type.SERVER
-                && config.getLoadedConfig() instanceof LoadedConfigAccessor loadedConfig
-                && loadedConfig.pbgConfigSyncFix$getPath() == null) {
+                && loadedConfig instanceof LoadedConfigAccessor pathAccessor
+                && pathAccessor.pbgConfigSyncFix$getPath() == null) {
             // All preceding PBG reload work has already run. The remaining
             // instruction only reports a retry for other mods and is the sole
             // consumer of getFullPath() in this callback.

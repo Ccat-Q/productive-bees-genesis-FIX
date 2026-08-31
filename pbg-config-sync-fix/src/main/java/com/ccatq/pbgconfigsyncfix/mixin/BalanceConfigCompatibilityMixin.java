@@ -22,11 +22,12 @@ public abstract class BalanceConfigCompatibilityMixin {
     )
     private static void pbgConfigSyncFix$skipLegacyMigrationForSyncedConfig(
             ModConfig config, CallbackInfoReturnable<Boolean> callbackInfo) {
+        Object loadedConfig = config == null ? null : config.getLoadedConfig();
         if (config != null
                 && PRODUCTIVE_BEES_GENESIS.equals(config.getModId())
                 && config.getType() == ModConfig.Type.SERVER
-                && config.getLoadedConfig() instanceof LoadedConfigAccessor loadedConfig
-                && loadedConfig.pbgConfigSyncFix$getPath() == null) {
+                && loadedConfig instanceof LoadedConfigAccessor pathAccessor
+                && pathAccessor.pbgConfigSyncFix$getPath() == null) {
             callbackInfo.setReturnValue(false);
         }
     }
