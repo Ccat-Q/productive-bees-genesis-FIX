@@ -36,6 +36,30 @@ jobs:
       - name: Build
         run: ./gradlew :pbg-config-sync-fix:build --stacktrace
 
+      - name: Verify PBG 1.0.5 Mixin target and artifact contents
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://github.com/Ayoshiko/productive-bees-genesis/releases/download/v1.0.5/productivebeesgenesis-1.0.5.jar \
+            --output /tmp/productivebeesgenesis-1.0.5.jar
+          echo 'e817cb845efffbfe83632a79257ea22363d8e3062f927953baaf39a67421f113  /tmp/productivebeesgenesis-1.0.5.jar' | sha256sum --check
+          javap -classpath /tmp/productivebeesgenesis-1.0.5.jar -p -c -s \
+            com.ayoshiko.productivebeesgenesis.ProductiveBeesGenesis > /tmp/pbg-bytecode.txt
+          grep -F 'lambda$registerConfigListeners$1(net.neoforged.fml.event.config.ModConfigEvent$Reloading);' /tmp/pbg-bytecode.txt
+          grep -F 'descriptor: (Lnet/neoforged/fml/event/config/ModConfigEvent$Reloading;)V' /tmp/pbg-bytecode.txt
+          grep -F 'Method net/neoforged/fml/config/ModConfig.getFullPath:()Ljava/nio/file/Path;' /tmp/pbg-bytecode.txt
+          javap -classpath /tmp/productivebeesgenesis-1.0.5.jar -p -c -s \
+            com.ayoshiko.productivebeesgenesis.config.BalanceConfigCompatibility > /tmp/pbg-migration-bytecode.txt
+          grep -F 'public static boolean migrateLegacyConfig(net.neoforged.fml.config.ModConfig);' /tmp/pbg-migration-bytecode.txt
+          grep -F 'descriptor: (Lnet/neoforged/fml/config/ModConfig;)Z' /tmp/pbg-migration-bytecode.txt
+          jar tf pbg-config-sync-fix/build/libs/pbg-config-sync-fix-*.jar | grep -Fx 'pbg_config_sync_fix.mixins.json'
+          jar tf pbg-config-sync-fix/build/libs/pbg-config-sync-fix-*.jar | grep -Fx 'pbg_config_sync_fix.refmap.json'
+          unzip -p pbg-config-sync-fix/build/libs/pbg-config-sync-fix-*.jar pbg_config_sync_fix.mixins.json | jq -e '
+            .refmap == "pbg_config_sync_fix.refmap.json"
+            and (.client | index("BalanceConfigCompatibilityMixin"))
+            and (.client | index("LoadedConfigAccessor"))
+            and (.client | index("ProductiveBeesGenesisConfigSyncMixin"))'
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:

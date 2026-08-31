@@ -3,7 +3,10 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_21",
   "package": "com.ccatq.pbgconfigsyncfix.mixin",
+  "refmap": "pbg_config_sync_fix.refmap.json",
   "client": [
+    "BalanceConfigCompatibilityMixin",
+    "LoadedConfigAccessor",
     "ProductiveBeesGenesisConfigSyncMixin"
   ],
   "injectors": {
