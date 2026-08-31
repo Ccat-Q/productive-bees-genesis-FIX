@@ -61,6 +61,38 @@ jobs:
             and (.client | index("LoadedConfigAccessor"))
             and (.client | index("ProductiveBeesGenesisConfigSyncMixin"))'
       - name: Upload mod JAR
+      - name: Prepare PBG client smoke-test mods
+        shell: bash
+        run: |
+          set -euo pipefail
+          mods_dir=pbg-config-sync-fix/run/mods
+          mkdir -p "$mods_dir"
+          cp /tmp/productivebeesgenesis-1.0.5.jar "$mods_dir/"
+          fetch() { curl --fail --location --retry 3 --retry-all-errors "$1" --output "$2"; }
+          fetch https://www.cursemaven.com/curse/maven/productivebees-377897/8022994/productivebees-377897-8022994.jar "$mods_dir/productivebees-1.21.1-13.13.5.jar"
+          unzip -p "$mods_dir/productivebees-1.21.1-13.13.5.jar" META-INF/jarjar/productivelib-1.21.1-0.2.0.jar > "$mods_dir/productivelib-1.21.1-0.2.0.jar"
+          fetch https://www.cursemaven.com/curse/maven/mekanism-268560/7904058/mekanism-268560-7904058.jar "$mods_dir/Mekanism-1.21.1-10.7.19.85.jar"
+
+      - name: Smoke-start PBG with the compatibility patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout --signal=INT 180s xvfb-run --auto-servernum \
+            ./gradlew :pbg-config-sync-fix:runClient --stacktrace > /tmp/pbg-client-smoke.log 2>&1
+          launcher_status=$?
+          set -e
+          cat /tmp/pbg-client-smoke.log
+          log_file=$(find pbg-config-sync-fix -path '*/logs/latest.log' -type f -print -quit)
+          test -n "$log_file"
+          cat "$log_file"
+          if [ "$launcher_status" -ne 0 ] && [ "$launcher_status" -ne 124 ]; then
+            exit "$launcher_status"
+          fi
+          grep -F 'productivebeesgenesis' "$log_file"
+          if grep -E 'InjectionError|MixinTransformerError|Scanned 0 target\(s\)|ProductiveBeesGenesis.*failed' "$log_file"; then
+            exit 1
+          fi
         uses: actions/upload-artifact@v4
         with:
           name: pbg-config-sync-fix-neoforge-1.21.1
